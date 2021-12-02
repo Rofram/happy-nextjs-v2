@@ -8,7 +8,7 @@ interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export default function PrimaryButton({ children, ...props }: PrimaryButtonProps) {
   return (
-    <button className="primary-button" {...props}>
+    <button className={style.primaryButton} {...props}>
       {children}
     </button>
   );
