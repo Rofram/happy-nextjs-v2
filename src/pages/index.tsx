@@ -1,5 +1,5 @@
 import Home from "../templates/home";
 
-export default function index() {
+export default function Index() {
   return <Home />
 }
