@@ -50,20 +50,20 @@ export default function OrphanagesMap() {
           <fieldset>
             <legend>Visitação</legend>
 
-            <div className="input-block">
+            <div className={style.inputBlock}>
               <label htmlFor="instructions">Instruções</label>
               <textarea id="instructions" />
             </div>
 
-            <div className="input-block">
+            <div className={style.inputBlock}>
               <label htmlFor="opening_hours">Nome</label>
               <input id="opening_hours" />
             </div>
 
-            <div className="input-block">
+            <div className={style.inputBlock}>
               <label htmlFor="open_on_weekends">Atende fim de semana</label>
 
-              <div className="button-select">
+              <div className={style.buttonSelect}>
                 <button type="button" className="active">Sim</button>
                 <button type="button">Não</button>
               </div>
