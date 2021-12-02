@@ -3,12 +3,15 @@ import Link from 'next/link';
 import { FiPlus } from 'react-icons/fi';
 import dynamic from 'next/dynamic';
 import style from './styles.module.scss';
+import { useMapContext } from '../../contexts/mapContext';
 
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), {
     ssr: false,
 })
 
 function OrphanagesMap() {
+    const { location } = useMapContext()
+
     return (
         <div className={style.pageMap}>
             <aside>
@@ -29,7 +32,7 @@ function OrphanagesMap() {
                 </footer>
             </aside>
 
-            <MapWithNoSSR />
+            <MapWithNoSSR position={location} />
 
             <Link href="/orphanages/create" >
                 <a className={style.createOrphanages}>
