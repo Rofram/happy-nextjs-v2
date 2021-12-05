@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { MapContainer, Marker, Popup, TileLayer, MapContainerProps } from "react-leaflet";
 import mapIcon from "../../utils/map/mapIcon";
 import style from './style.module.scss';
@@ -10,19 +11,21 @@ type PopupProps = {
   buttonLink: string;
 }
 
+export type MarkerProps = {
+  position: [ latitude: number, longitude: number ];
+  popup?: PopupProps;
+}
+
 interface MapProps extends MapContainerProps {
   position?: [ latitude: number, longitude: number ];
-  markers?: Array<{
-    position: [ latitude: number, longitude: number ];
-    popup?: PopupProps;
-  }>;
+  markers?: MarkerProps[];
 };
 
 
 export default function Map({ position, markers = [], ...rest }: MapProps) {
     return (
       <MapContainer
-        center={[-22.227077, -54.8025487]}
+        center={position}
         style={{ width: "100%", height: "100%" }}
         zoom={15}
         {...rest}
@@ -36,20 +39,25 @@ export default function Map({ position, markers = [], ...rest }: MapProps) {
                 position={marker.position}
                 key={`marker-${index}`}
               >
-                {marker.popup && (
+                {!!marker.popup && (
                   <Popup 
                     closeButton={false}
                     minWidth={240}
                     maxWidth={240}
                     className={style.MapPopup}
                   >
-                    <p>{marker.popup.title}</p>
+                    <div className={style.image}>
+                      <Image src={marker.popup.image} alt={marker.popup.title} layout="fill" />
+                    </div>
+                    <div className={style.popupContent}>
+                      <p>{marker.popup.title}</p>
 
-                    <Link href={marker.popup.buttonLink}>
-                      <a>
-                        <FiArrowRight size={20} color="#fff" />
-                      </a>
-                    </Link>
+                      <Link href={marker.popup.buttonLink}>
+                        <a>
+                          <FiArrowRight size={20} color="#fff" />
+                        </a>
+                      </Link>
+                    </div>
                   </Popup>
                 )}
               </Marker>
