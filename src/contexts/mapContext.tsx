@@ -14,17 +14,26 @@ export const MapProvider: React.FC = ({ children }) => {
 
   const setMapLocation = useCallback((location: Location) => {
     setLocation(location);
+    localStorage.setItem('@Happy:UserLocation', JSON.stringify(location));
   }, []);
 
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        setMapLocation([position.coords.latitude, position.coords.longitude]);
-      });
-    } else {
-      console.log("geolocation Not Available");
+    if (!location) {
+      const mapLocation = localStorage.getItem('@Happy:UserLocation');
+
+      if (mapLocation) {
+        setLocation(JSON.parse(mapLocation));
+      }
+
+      if (!mapLocation && "geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          setMapLocation([position.coords.latitude, position.coords.longitude]);
+        });
+      } else {
+        console.warn("geolocation Not Available");
+      }
     }
-  }, [setMapLocation])
+  }, [setMapLocation, location])
 
   return (
     <MapContext.Provider value={{ location, setMapLocation }}>
