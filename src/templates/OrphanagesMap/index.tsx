@@ -4,12 +4,17 @@ import { FiPlus } from 'react-icons/fi';
 import dynamic from 'next/dynamic';
 import style from './styles.module.scss';
 import { useMapContext } from '../../contexts/mapContext';
+import { MarkerProps } from '../../components/Map';
 
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), {
     ssr: false,
 })
 
-function OrphanagesMap() {
+export type OrphanagesMapProps = {
+    orphanages: MarkerProps[]
+}
+
+function OrphanagesMap({ orphanages }: OrphanagesMapProps) {
     const { location } = useMapContext()
 
     return (
@@ -32,7 +37,7 @@ function OrphanagesMap() {
                 </footer>
             </aside>
 
-            <MapWithNoSSR position={location} />
+            <MapWithNoSSR position={location} markers={orphanages} />
 
             <Link href="/orphanages/create" >
                 <a className={style.createOrphanages}>
