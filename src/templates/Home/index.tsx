@@ -4,6 +4,8 @@ import { FiArrowRight } from 'react-icons/fi';
 import style from './styles.module.scss';
 
 export default function Home() {
+  
+
   return (
     <div className={style.pageLanding}>
       <div className={style.contentWrapper}>
