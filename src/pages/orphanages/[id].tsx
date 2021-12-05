@@ -1,14 +1,14 @@
-import axios from "axios"
 import { GetStaticPaths, GetStaticProps } from "next"
+import api from "../../services/api"
 
-import OrphanageDetails, { ApiResponse } from "../../templates/OrphanageDetails"
+import OrphanageDetails, { OrphanageDetailsProps } from "../../templates/OrphanageDetails"
 
-export default function OrphanageDetailsPage(props: ApiResponse) {
+export default function OrphanageDetailsPage(props: OrphanageDetailsProps) {
   return <OrphanageDetails {...props} />
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const { data } = await axios.get<ApiResponse[]>(`${process.env.API_URL}/orphanages`)
+  const { data } = await api.get<OrphanageDetailsProps[]>('/orphanages')
 
   const paths = data.map(orphanage => ({
     params: { id: orphanage.id.toString() }
@@ -21,7 +21,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { data } = await axios.get<ApiResponse>(`${process.env.API_URL}/orphanages/${params?.id}`)
+  const { data } = await api.get<OrphanageDetailsProps>(`/orphanages/${params?.id}`)
 
   return {
     props: data,
