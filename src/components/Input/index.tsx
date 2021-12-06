@@ -13,9 +13,10 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   containerStyle?: React.CSSProperties;
   icon?: React.ComponentType<IconBaseProps>;
+  mask?: string;
 }
 
-const Input = ({ name, label, icon: Icon, containerStyle, ...rest }: InputProps) => {
+const Input = ({ name, label, icon: Icon, containerStyle, mask, ...rest }: InputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
@@ -29,21 +30,31 @@ const Input = ({ name, label, icon: Icon, containerStyle, ...rest }: InputProps)
     });
   }, [fieldName, registerField]);
 
-  const handleInputFocus = useCallback(() => {
+  const handleInputFocus = () => {
     setIsFocused(true);
-  }, []);
+  };
 
-  const handleInputBlur = useCallback(() => {
+  const handleInputBlur = () => {
     setIsFocused(false);
+    
 
     setIsFilled(!!inputRef.current?.value); // verifica se existe algo escrito no input e seta um boolean
-  }, []);
+  };
+
+  const maskInput = (value: number | string, pattern: string) => {
+    let i = 0;
+    const v = value.toString().replace(/[^a-zA-Z0-9]/g, "");
+    return pattern.replace(/#/g, () => {
+        const caractere = v[i++];
+        return caractere || "";
+    })
+  };
 
   return (
     <>
       <label htmlFor={name} className={style.inputLabel}>{label}</label>
       <div
-        className={`${style.container} ${isFocused || isFilled ? style.focused : ''} ${!!error ? style.error : ''}`}
+        className={`${style.container} ${isFocused || isFilled ? style.focused : ''} ${!!error && !isFocused ? style.error : ''}`}
         style={containerStyle}
       >
         {!!Icon && <Icon size={20} />}
@@ -51,6 +62,10 @@ const Input = ({ name, label, icon: Icon, containerStyle, ...rest }: InputProps)
           id={name}
           name={name}
           onFocus={handleInputFocus}
+          onKeyUp={() => {
+            if (inputRef.current && mask)
+              inputRef.current.value = maskInput(inputRef.current?.value ?? '', mask)
+          }}
           onBlur={handleInputBlur}
           defaultValue={defaultValue}
           ref={inputRef}
