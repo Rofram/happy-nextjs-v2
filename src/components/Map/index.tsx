@@ -3,7 +3,8 @@ import Image from "next/image";
 import { MapContainer, Marker, Popup, TileLayer, MapContainerProps } from "react-leaflet";
 import mapIcon from "../../utils/map/mapIcon";
 import style from './style.module.scss';
-import { FiArrowRight } from 'react-icons/fi'
+import { FiArrowRight } from 'react-icons/fi';
+import { useState } from "react";
 
 type PopupProps = {
   title: string;
@@ -16,13 +17,14 @@ export type MarkerProps = {
   popup?: PopupProps;
 }
 
-interface MapProps extends MapContainerProps {
+type MapProps = {
   position?: [ latitude: number, longitude: number ];
   markers?: MarkerProps[];
-};
+  children?: React.ReactNode;
+} & MapContainerProps;
 
 
-export default function Map({ position, markers = [], ...rest }: MapProps) {
+export default function Map({ position, markers = [], children, ...rest }: MapProps) {
     return (
       <MapContainer
         center={position}
@@ -49,6 +51,7 @@ export default function Map({ position, markers = [], ...rest }: MapProps) {
                     <div className={style.image}>
                       <Image src={marker.popup.image} alt={marker.popup.title} layout="fill" />
                     </div>
+
                     <div className={style.popupContent}>
                       <p>{marker.popup.title}</p>
 
@@ -62,6 +65,7 @@ export default function Map({ position, markers = [], ...rest }: MapProps) {
                 )}
               </Marker>
           ))}
+          {children}
         </MapContainer>
     );
 }
