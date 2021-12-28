@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { FiPlus } from 'react-icons/fi';
 import dynamic from 'next/dynamic';
 import style from './styles.module.scss';
-import { useMapContext } from '../../contexts/mapContext';
+import { useUserLocationContext } from '../../contexts/mapContext';
 import { MarkerProps } from '../../components/Map';
 
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), {
@@ -15,7 +15,7 @@ export type OrphanagesMapProps = {
 }
 
 function OrphanagesMap({ orphanages }: OrphanagesMapProps) {
-    const { location } = useMapContext()
+    const { location } = useUserLocationContext()
 
     return (
         <div className={style.pageMap}>
