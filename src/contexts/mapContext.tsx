@@ -1,49 +1,53 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 type Location = [ number, number ]
 
-type MapContextProps = {
-  setMapLocation: (location: Location) => void;
+type UserLocationContextProps = {
+  setUserLocation: (location: Location) => void;
   location?: Location;
 }
 
-const MapContext = createContext<MapContextProps>({} as MapContextProps);
+type UserGeolocationProviderProps = {
+  children: React.ReactNode;
+}
 
-export const MapProvider: React.FC = ({ children }) => {
-  const [location, setLocation] = useState<[ number, number ]>();
+const UserLocationContext = createContext<UserLocationContextProps>({} as UserLocationContextProps);
 
-  const setMapLocation = useCallback((location: Location) => {
+export const UserGeolocationProvider = ({ children }: UserGeolocationProviderProps) => {
+  const [location, setLocation] = useState<Location>();
+
+  const setUserLocation = useCallback((location: Location) => {
     setLocation(location);
     localStorage.setItem('@Happy:UserLocation', JSON.stringify(location));
   }, []);
 
   useEffect(() => {
     if (!location) {
-      const mapLocation = localStorage.getItem('@Happy:UserLocation');
+      const userLocation = localStorage.getItem('@Happy:UserLocation');
 
-      if (mapLocation) {
-        setLocation(JSON.parse(mapLocation));
+      if (userLocation) {
+        setLocation(JSON.parse(userLocation));
       }
 
-      if (!mapLocation && "geolocation" in navigator) {
+      if (!userLocation && "geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
-          setMapLocation([position.coords.latitude, position.coords.longitude]);
+          setUserLocation([position.coords.latitude, position.coords.longitude]);
         });
       } else {
         console.warn("geolocation Not Available");
       }
     }
-  }, [setMapLocation, location])
+  }, [setUserLocation, location])
 
   return (
-    <MapContext.Provider value={{ location, setMapLocation }}>
+    <UserLocationContext.Provider value={{ location, setUserLocation }}>
       {children}
-    </MapContext.Provider>
+    </UserLocationContext.Provider>
   )
 }
 
-export const useMapContext = () => {
-  const context = useContext(MapContext);
+export const useUserLocationContext = () => {
+  const context = useContext(UserLocationContext);
 
   if (!context) {
     throw new Error('useMapContext must be used within a MapProvider');
