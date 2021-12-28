@@ -10,7 +10,7 @@ type FormButtonsProps = {
 }
 
 export default function FormButtons({ label, onClick, disabled, styles, buttonLabel }: FormButtonsProps) {
-  const [ selected, setSelected ] = useState<string>();
+  const [ selected, setSelected ] = useState<string>(buttonLabel[0]);
 
   return (
     <>
