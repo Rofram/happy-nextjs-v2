@@ -15,7 +15,7 @@ export type OrphanageDetailsProps = {
   longitude: number
   about: string
   instructions: string
-  open_hours: string
+  opening_hours: string
   open_on_weekends: boolean
   images: [
     {
@@ -29,7 +29,7 @@ const MapWithNoSSR = dynamic(() => import('../../components/Map'), {
 })
 
 export default function OrphanageDetails(props: OrphanageDetailsProps) {
-  const [coverImage, setCoverImage] = useState<string>(props.images && props.images[0].url)
+  const [ activeImage, setActiveImage ] = useState(0)
 
   return (
     <div className={style.pageOrphanage}>
@@ -38,12 +38,17 @@ export default function OrphanageDetails(props: OrphanageDetailsProps) {
       <main>
         <div className={style.orphanageDetails}>
           <div className={style.coverImage}>
-            {coverImage && <Image src={coverImage} alt="Lar das meninas" layout="fill" />}
+            {!!props.images && <Image src={props.images[activeImage].url} alt="Lar das meninas" layout="fill" />}
           </div>
 
           <div className={style.images}>
             {props.images && props.images.map((image, index) => (
-              <button className={style.active} type="button" key={`image-gallery-${index}`}>
+              <button
+                key={`image-gallery-${index}`}
+                className={`${activeImage === index ? style.active : ''}`}
+                type="button" 
+                onClick={() => setActiveImage(index)}
+              >
                 <Image src={image.url} alt={`${props.name}-image-${index}`} width={90} height={88} />
               </button>
             ))}
@@ -54,17 +59,28 @@ export default function OrphanageDetails(props: OrphanageDetailsProps) {
             <p>{props.about}</p>
 
             <div className={style.mapContainer}>
-              <MapWithNoSSR 
+              <MapWithNoSSR
                 center={[props.latitude, props.longitude]} 
                 zoom={16} 
                 style={{ width: '100%', height: 280 }}
                 markers={[{
                   position: [props.latitude, props.longitude]
                 }]}
+                dragging={false}
+                touchZoom={false}
+                zoomControl={false}
+                scrollWheelZoom={false}
+                doubleClickZoom={false}
               />
 
               <footer>
-                <a href="">Ver rotas no Google Maps</a>
+                <a 
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${props.latitude},${props.longitude}&travelmode=driving`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Ver rotas no Google Maps
+                </a>
               </footer>
             </div>
 
@@ -77,13 +93,22 @@ export default function OrphanageDetails(props: OrphanageDetailsProps) {
               <div className={style.hour}>
                 <FiClock size={32} color="#15B6D6" />
                 Segunda à Sexta <br />
-                8h às 18h
+                {props.opening_hours}
               </div>
-              <div className={style.openOnWeekends}>
-                <FiInfo size={32} color="#39CC83" />
-                Atendemos <br />
-                fim de semana
-              </div>
+              {props.open_on_weekends 
+              ? (
+                <div className={style.openOnWeekends}>
+                  <FiInfo size={32} color="#39CC83" />
+                  Atendemos <br />
+                  fim de semana
+                </div>
+              ) : (
+                <div className={style.dontOpenOnWeekends}>
+                  <FiInfo size={32} color="#FF6690" />
+                  Nao atendemos <br />
+                  fim de semana
+                </div>
+              )}
             </div>
 
             <PrimaryButton type="button" aria-label="pegar contato com whatsapp">
