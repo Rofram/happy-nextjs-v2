@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, useEffect, useRef, useState, useCallback } from 'react';
+import React, { InputHTMLAttributes, useEffect, useRef, useState } from 'react';
 import { useField } from '@unform/core';
 
 import { IconBaseProps } from 'react-icons';
@@ -30,18 +30,19 @@ const Input = ({ name, label, icon: Icon, containerStyle, mask, ...rest }: Input
     });
   }, [fieldName, registerField]);
 
-  const handleInputFocus = () => {
-    setIsFocused(true);
-  };
-
-  const handleInputBlur = () => {
+  function handleInputBlur () {
     setIsFocused(false);
-    
-
-    setIsFilled(!!inputRef.current?.value); // verifica se existe algo escrito no input e seta um boolean
+    setIsFilled(!!inputRef.current?.value);
   };
 
-  const maskInput = (value: number | string, pattern: string) => {
+  function handleKeyUp() {
+    if (inputRef.current && mask) {
+      inputRef.current.value = maskInput(inputRef.current.value, mask)
+    }
+  }
+
+
+  function maskInput(value: number | string, pattern: string) { // mascara de input by devzolo
     let i = 0;
     const v = value.toString().replace(/[^a-zA-Z0-9]/g, "");
     return pattern.replace(/#/g, () => {
@@ -61,11 +62,8 @@ const Input = ({ name, label, icon: Icon, containerStyle, mask, ...rest }: Input
         <input
           id={name}
           name={name}
-          onFocus={handleInputFocus}
-          onKeyUp={() => {
-            if (inputRef.current && mask)
-              inputRef.current.value = maskInput(inputRef.current?.value ?? '', mask)
-          }}
+          onFocus={() => setIsFocused(true)}
+          onKeyUp={handleKeyUp}
           onBlur={handleInputBlur}
           defaultValue={defaultValue}
           ref={inputRef}

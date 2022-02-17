@@ -48,4 +48,4 @@ function OrphanagesMap({ orphanages }: OrphanagesMapProps) {
     );
 }
 
-export default OrphanagesMap;
+export default OrphanagesMap

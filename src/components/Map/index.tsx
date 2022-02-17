@@ -5,6 +5,7 @@ import mapIcon from "../../utils/map/mapIcon";
 import style from './style.module.scss';
 import { FiArrowRight } from 'react-icons/fi';
 import { useState } from "react";
+import getImageUrl from "../../utils/getImageUrl";
 
 type PopupProps = {
   title: string;
@@ -49,7 +50,7 @@ export default function Map({ position, markers = [], children, ...rest }: MapPr
                     className={style.MapPopup}
                   >
                     <div className={style.image}>
-                      <Image src={marker.popup.image} alt={marker.popup.title} layout="fill" />
+                      <Image src={getImageUrl(marker.popup.image)} alt={marker.popup.title} layout="fill" />
                     </div>
 
                     <div className={style.popupContent}>

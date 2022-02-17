@@ -1,4 +1,4 @@
-.pageLanding {
+.pageSuccess {
   width: 100vw;
   height: 100vh;
   background: linear-gradient(329.54deg, #29B6D1 0%, #00C7C7 100%);
@@ -17,14 +17,12 @@
     max-height: 680px;
 
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     flex-direction: column;
-    justify-content: space-between;
-
-    background: url('/images/landing.svg') no-repeat 80% center;
+    justify-content: center;
 
     main {
-      max-width: 350px;
+      max-width: 500px;
 
       h1 {
           font-size: 76px;

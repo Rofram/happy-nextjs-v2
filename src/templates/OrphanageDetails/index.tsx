@@ -6,7 +6,8 @@ import Sidebar from "../../components/Sidebar"
 import dynamic from "next/dynamic"
 
 import style from "./styles.module.scss"
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import getImageUrl from "../../utils/getImageUrl"
 
 export type OrphanageDetailsProps = {
   id: string
@@ -38,7 +39,7 @@ export default function OrphanageDetails(props: OrphanageDetailsProps) {
       <main>
         <div className={style.orphanageDetails}>
           <div className={style.coverImage}>
-            {!!props.images && <Image src={props.images[activeImage].url} alt="Lar das meninas" layout="fill" />}
+            {!!props.images && <Image src={getImageUrl(props.images[activeImage].url)} alt="Lar das meninas" layout="fill" />}
           </div>
 
           <div className={style.images}>
@@ -49,7 +50,7 @@ export default function OrphanageDetails(props: OrphanageDetailsProps) {
                 type="button" 
                 onClick={() => setActiveImage(index)}
               >
-                <Image src={image.url} alt={`${props.name}-image-${index}`} width={90} height={88} />
+                <Image src={getImageUrl(image.url)} alt={`${props.name}-image-${index}`} width={90} height={88} />
               </button>
             ))}
           </div>

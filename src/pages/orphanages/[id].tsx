@@ -1,10 +1,10 @@
 import { GetStaticPaths, GetStaticProps } from "next"
 import api from "../../services/api"
 
-import OrphanageDetails, { OrphanageDetailsProps } from "../../templates/OrphanageDetails"
+import OrphanageDetailsTemplate, { OrphanageDetailsProps } from "../../templates/OrphanageDetails"
 
 export default function OrphanageDetailsPage(props: OrphanageDetailsProps) {
-  return <OrphanageDetails {...props} />
+  return <OrphanageDetailsTemplate {...props} />
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {

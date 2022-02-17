@@ -1,5 +1,5 @@
-import Success from "../../templates/Success";
+import SuccessTemplate from "../../templates/Success";
 
 export default function SuccessPage() {
-  return <Success />
+  return <SuccessTemplate />
 }

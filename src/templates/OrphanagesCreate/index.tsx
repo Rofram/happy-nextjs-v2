@@ -5,23 +5,21 @@ import { useRouter } from 'next/router';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import { toast } from 'react-toastify';
+import * as Yup from 'yup';
 
 import PrimaryButton from "../../components/PrimaryButton";
 import Sidebar from "../../components/Sidebar";
 import Input from '../../components/Input';
 import Textarea from '../../components/Textarea';
+import UploadImage from '../../components/UploadImage';
+import FormButtons from '../../components/FormButtons';
 
-import { FiPlus, FiUser } from "react-icons/fi";
-import mapIcon from '../../utils/map/mapIcon';
 import { useUserLocationContext } from '../../contexts/mapContext';
 
 import style from './styles.module.scss';
 
-import * as Yup from 'yup';
 import api from '../../services/api';
 import getValidationErrors from '../../utils/form/getValidationErrors';
-import UploadImage from '../../components/UploadImage';
-import FormButtons from '../../components/FormButtons';
 
 
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), {
@@ -42,17 +40,30 @@ type SignUpFormData = {
   images: File[];
 }
 
-export default function OrphanagesMap() {
+function OrphanagesCreate() {
   const formRef = useRef<FormHandles>(null);
   const { location } = useUserLocationContext()
   const [position, setPosition] = useState<[number, number] | null>(null);
-  const [orphanage, setOrphanage] = useState()
+  const [previewImages, setPreviewImages] = useState<string[]>([])
+  const [openOnWeekends, setOpenOnWeekends] = useState<string>()
+  
   const router = useRouter()
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const data = new FormData();
+  function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
+    if(!event.target.files) {
+      return;
+    }
 
-    data.append('file', e.target.files![0]);
+    const selectedImages = Array.from(event.target.files)
+      .map(image => {
+        return URL.createObjectURL(image);
+      })
+    
+      setPreviewImages(selectedImages);
+  }
+
+  function handleOpenOnWeekends(value: string) {
+    setOpenOnWeekends(value)
   }
 
   const handleSubmit = useCallback(async (data: SignUpFormData) => {
@@ -71,27 +82,32 @@ export default function OrphanagesMap() {
         abortEarly: false,
       });
 
+      if(!position) {
+        throw new Error('Posição no mapa obrigatório')
+      }
+
+      const [latitude, longitude] = position;
+
       const formData = new FormData();
 
       formData.append('name', data.name);
+      formData.append('latitude', latitude.toString());
+      formData.append('longitude', longitude.toString());
       formData.append('about', data.about);
       formData.append('instructions', data.instructions);
       formData.append('opening_hours', data.opening_hours);
+      formData.append('open_on_weekends', openOnWeekends === 'Sim' ? 'true' : 'false');
       formData.append('whatsapp', data.whatsapp);
 
       if (data.images) {
-        data.images.forEach(image => {
+        Array.from(data.images).forEach(image => {
           formData.append('images', image);
         });
       }
 
-      await api.post('/orphanages', data);
+      await api.post('/orphanages', formData);
 
-      router.push('orphanages/success');
-
-      toast('Cadastro realizado!', {
-        type: 'success',
-      });
+      router.push('success');
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const errors = getValidationErrors(err);
@@ -101,11 +117,13 @@ export default function OrphanagesMap() {
         return;
       }
 
+      console.warn(err)
+
       toast('Erro no cadastro, verifique os dados e tente novamente', {
         type: 'error',
       });
     }
-  }, [router])
+  }, [router, position, openOnWeekends])
 
   return (
     <div className={style.pageCreateOrphanage}>
@@ -124,7 +142,7 @@ export default function OrphanagesMap() {
 
             <Textarea name='about' label='Sobre' maxCharacter={300} />
 
-            <UploadImage onChange={handleChange} />
+            <UploadImage name="images" label="Fotos" onChange={handleSelectImages} previewImages={previewImages} />
           </fieldset>
 
           <fieldset>
@@ -132,11 +150,11 @@ export default function OrphanagesMap() {
 
             <Textarea name='instructions' label='Instruções' />
 
-            <Input name='opening_hours' label='Horario para visita' />
+            <Input name='opening_hours' label='Horário para visita' />
 
             <Input name='whatsapp' label='Whatsapp' mask="(##) #####-####" />
 
-            <FormButtons buttonLabel={['Sim', 'Não']} label='Atende fim de semana' />
+            <FormButtons buttonLabel={['Sim', 'Não']} label='Atende fim de semana' onClick={handleOpenOnWeekends} />
           </fieldset>
 
           <PrimaryButton type="submit">Confirmar</PrimaryButton>
@@ -145,3 +163,5 @@ export default function OrphanagesMap() {
     </div>
   );
 }
+
+export default OrphanagesCreate

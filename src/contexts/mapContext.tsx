@@ -30,7 +30,7 @@ export const UserGeolocationProvider = ({ children }: UserGeolocationProviderPro
       }
 
       if (!userLocation && "geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+        navigator.geolocation.getCurrentPosition((position) => {
           setUserLocation([position.coords.latitude, position.coords.longitude]);
         });
       } else {

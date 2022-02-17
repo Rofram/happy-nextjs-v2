@@ -1,16 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import style from './styles.module.scss';
 
 type FormButtonsProps = {
   label?: string;
-  onClick?: () => void;
+  onClick?: (value: string) => void;
   disabled?: boolean;
   styles?: React.CSSProperties;
   buttonLabel: string[];
 }
 
 export default function FormButtons({ label, onClick, disabled, styles, buttonLabel }: FormButtonsProps) {
-  const [ selected, setSelected ] = useState<string>(buttonLabel[0]);
+  const [ selected, setSelected ] = useState<string>();
+
+  function handleClick(value: string) {
+    setSelected(value)
+
+    if(onClick) {
+      onClick(value)
+    }
+  }
+
+  useEffect(() => {
+    setSelected(buttonLabel[0])
+
+    if(onClick) {
+      onClick(buttonLabel[0])
+    }
+  }, [])
 
   return (
     <>
@@ -18,8 +34,15 @@ export default function FormButtons({ label, onClick, disabled, styles, buttonLa
       <div className={style.inputBlock}>
 
         <div className={style.buttonSelect} style={styles}>
-          {buttonLabel.map((text, index) => (
-            <button key={`formButton-${index}`} onClick={() => setSelected(text)} type="button" className={selected == text ? style.active : ''}>{text}</button>
+          {buttonLabel.map(text => (
+            <button 
+              key={`formButton-${text}`} 
+              onClick={() => handleClick(text)} 
+              type="button" 
+              className={selected == text ? style.active : ''}
+            >
+              {text}
+            </button>
           ))}
         </div>
       </div>
